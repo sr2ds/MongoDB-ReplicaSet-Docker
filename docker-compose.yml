@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  
+  mongodb1:
+    container_name: mongodb1
+    image: mongo:5
+    volumes:
+      - ~/mongodb/data:/data/db
+      - ./scripts/mongosetup.sh:/scripts/rs-init.sh
+    links:
+      - mongodb2
+      - mongodb3
+    networks:
+      - internal
+    ports:
+      - 27017:27017
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+
+  mongodb2:
+    container_name: mongodb2
+    image: mongo:5
+    volumes:
+      - ~/mongodb/data2:/data/db
+    networks:
+      - internal
+    ports:
+      - 27018:27017
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+
+  mongodb3:
+    container_name: mongodb3
+    image: mongo:5
+    volumes:
+      - ~/mongodb/data3:/data/db
+    networks:
+      - internal
+    ports:
+      - 27019:27017
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "dbrs" ]
+
+networks:
+  internal:
+    driver: bridge
